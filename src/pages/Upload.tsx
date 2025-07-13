@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDashboard } from '@/contexts/DashboardContext';
+import { useTemplates } from '@/contexts/TemplatesContext';
 import { BriefGenerationWorkflow } from '@/components/workflow/BriefGenerationWorkflow';
 import { TemplateType } from '@/types';
-import { TEMPLATES } from '@/constants/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,9 +12,18 @@ import { cn } from '@/lib/utils';
 
 export function Upload() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { refreshData } = useDashboard();
+  const { templates } = useTemplates();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
   const [hoveredTemplate, setHoveredTemplate] = useState<TemplateType | null>(null);
+
+  // Check if a template was pre-selected from the templates page
+  useEffect(() => {
+    if (location.state?.selectedTemplate) {
+      setSelectedTemplate(location.state.selectedTemplate as TemplateType);
+    }
+  }, [location.state]);
 
   const handleBriefComplete = async (briefId: string) => {
     // Refresh dashboard data to sync all components
@@ -28,7 +37,7 @@ export function Upload() {
   };
 
   // Enhanced template data with icons and features
-  const enhancedTemplates = TEMPLATES.map(template => {
+  const enhancedTemplates = templates.map(template => {
     const templateEnhancements = {
       meeting_summary: {
         icon: Users,
@@ -80,9 +89,25 @@ export function Upload() {
       }
     };
 
+    // For custom templates, use their existing properties or defaults
+    const enhancement = templateEnhancements[template.id as keyof typeof templateEnhancements];
+    
+    if (enhancement) {
+      return {
+        ...template,
+        ...enhancement
+      };
+    }
+    
+    // Handle custom templates
     return {
       ...template,
-      ...templateEnhancements[template.id as keyof typeof templateEnhancements]
+      icon: FileUp, // Default icon for custom templates
+      color: 'slate',
+      estimatedTime: template.businessContext?.typical_duration || '2-4 min',
+      features: template.customizations?.focus_areas?.slice(0, 3) || ['Custom workflow', 'Tailored output', 'Flexible structure'],
+      popularity: 0,
+      badge: 'Custom'
     };
   });
 

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { DashboardProvider } from '@/contexts/DashboardContext';
+import { TemplatesProvider } from '@/contexts/TemplatesContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Layout } from '@/components/layout/Layout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
@@ -39,9 +40,11 @@ function App() {
             {/* Protected App Routes with Dashboard Context */}
             <Route path="/app" element={
               <ProtectedRoute>
-                <DashboardProvider>
-                  <Layout />
-                </DashboardProvider>
+                <TemplatesProvider>
+                  <DashboardProvider>
+                    <Layout />
+                  </DashboardProvider>
+                </TemplatesProvider>
               </ProtectedRoute>
             }>
               <Route index element={<Dashboard />} />
