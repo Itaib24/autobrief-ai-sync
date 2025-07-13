@@ -1,0 +1,2 @@
+-- Add AssemblyAI API key as a secret
+-- This will be set via the Supabase dashboard

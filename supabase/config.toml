@@ -1,0 +1,10 @@
+project_id = "obshcbemsezvokyevlzo"
+
+[functions.generate-brief-with-gemini]
+verify_jwt = false
+
+[functions.google-speech-to-text]
+verify_jwt = false
+
+[functions.transcribe-audio-enhanced]
+verify_jwt = false
